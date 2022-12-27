@@ -28,7 +28,7 @@ def update_item(db: Session, item_id: int, item_name: str | None = None,
                 item_price: float | None = None, item_description: str | None = None,
                 item_quantity: int | None = None,
                 category_id: int | None = None, brand_id: int | None = None):
-    db_item = db.query(models.Item).get(item_id)
+    db_item: models.Item = db.query(models.Item).get(item_id)
     if db_item is not None:
         if item_name is not None:
             db_item.name = item_name
@@ -50,6 +50,10 @@ def update_item(db: Session, item_id: int, item_name: str | None = None,
                 db_item.brand = db_brand
             else:
                 raise HTTPException(status_code=404, detail="Brand not found")
+
+            if not db_item.validate_model():
+                return 'Zostały podane nieprawidłowe dane'
+
         try:
             db.commit()
             db.refresh(db_item)
@@ -75,6 +79,9 @@ def create_item(db: Session, item_name: str, item_price: float, item_description
             db_new_item.brand = db_brand
         else:
             raise HTTPException(status_code=404, detail="Brand not found")
+
+    if not db_new_item.validate_model():
+        return 'Zostały podane nieprawidłowe dane'
 
     try:
         db.add(db_new_item)

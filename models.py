@@ -20,6 +20,15 @@ class Item(Base):
 
     supplies = relationship('Supply', back_populates='item')
 
+    def validate_model(self) -> bool:
+        if self.quantity < 0:
+            return False
+        if len(self.name) < 3:
+            return False
+        if self.price <= 0:
+            return False
+        return True
+
 
 class Category(Base):
     __tablename__ = "Categories"
