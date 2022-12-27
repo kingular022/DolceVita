@@ -23,14 +23,26 @@ def get_db():
 
 @app.post("/items/")
 def create_item(item_name: str, item_price: float, item_description: str = '', item_quantity: int = 0,
-                db: Session = Depends(get_db)):
-    return crud.create_item(db, item_name, item_price, item_description, item_quantity)
+                category_id: int | None = None, brand_id: int | None = None, db: Session = Depends(get_db)):
+    return crud.create_item(db, item_name, item_price, item_description, item_quantity, category_id, brand_id)
 
 
 @app.get("/items/")
 def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
+
+
+@app.delete("/items/")
+def remove_item(item_id: int, db: Session = Depends(get_db)):
+    return crud.delete_item(db, item_id)
+
+
+@app.put("/items")
+def update_item(item_id: int, item_name: str | None = None, item_price: float | None = None,
+                item_description: str | None = None, item_quantity: int | None = None,
+                category_id: int | None = None, brand_id: int | None = None, db: Session = Depends(get_db)):
+    return crud.update_item(db, item_id, item_name, item_price, item_description, item_quantity, category_id, brand_id)
 
 
 @app.post("/brands/")
@@ -56,7 +68,8 @@ def read_categories(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
 
 
 @app.post("/supplies/")
-def create_supply(item_id: int, supply_quantity: int, supply_date: datetime = datetime.now(), db: Session = Depends(get_db)):
+def create_supply(item_id: int, supply_quantity: int, supply_date: datetime = datetime.now(),
+                  db: Session = Depends(get_db)):
     return crud.create_supply(db, item_id, supply_quantity, supply_date)
 
 
