@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
@@ -51,3 +53,14 @@ def create_category(category_name: str, db: Session = Depends(get_db)):
 def read_categories(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     categories = crud.get_categories(db, skip=skip, limit=limit)
     return categories
+
+
+@app.post("/supplies/")
+def create_supply(item_id: int, supply_quantity: int, supply_date: datetime = datetime.now(), db: Session = Depends(get_db)):
+    return crud.create_supply(db, item_id, supply_quantity, supply_date)
+
+
+@app.get("/supplies/")
+def read_supplies(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    supplies = crud.get_supplies(db, skip=skip, limit=limit)
+    return supplies
